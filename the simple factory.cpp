@@ -4,7 +4,7 @@ class father {
 public:
 	virtual void transform()=0;
 	virtual void ability()=0;
-	virtual ~father()//×ÓÀàµÄÄÚ´æÈ«¶¼ÊÍ·Å
+	virtual ~father()//å­ç±»çš„å†…å­˜å…¨éƒ½é‡Šæ”¾
 	{
 
 	}
@@ -12,23 +12,23 @@ public:
 class sheep:public father {
 public:
 	void transform() {
-		cout << "É½ÑòµÄÈËĞÎÌ¬" << endl;
+		cout << "å±±ç¾Šçš„äººå½¢æ€" << endl;
 	}
 	void ability() {
-		cout << "½Å±äÊÖ" << endl;
+		cout << "è„šå˜æ‰‹" << endl;
 	}
 };
 class lion :public father {
 public:
 	void transform() {
-		cout << "Ê¨×ÓµÄÈËĞÎÌ¬" << endl;
+		cout << "ç‹®å­çš„äººå½¢æ€" << endl;
 	}
 	void ability() {
-		cout << "Åç»ğ" << endl;
+		cout << "å–·ç«" << endl;
 	}
 };
-//¶¨Òå¹¤³§Àà
-enum class Type:char{sheep,lion};//Ã¶¾Ù
+//å®šä¹‰å·¥å‚ç±»
+enum class Type:char{sheep,lion};//æšä¸¾
 class factory {
 public:
 	father* createsmile(Type type) {
