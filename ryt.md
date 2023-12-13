@@ -95,25 +95,182 @@
 
 ##### 12、堆栈缓存方式的区别
 
- 
+ *1.堆栈是一种数据结构，采用先进后出。常用于存储函数调用，局部变量和程序执行状态。*
+
+ *2.缓存是一种存储数据的高速存储器，用于临时存储最近使用过的数据，以提高对这些数据的访问速度。*
 
 ##### 13、STL容器有哪些，常用的算法
 
- 
+######  1.序列容器
 
-14、什么是面向对象
+*vector 	deque 	list 	forward_list 	arry*
 
- 
+######  2.关联容器
 
-15、用过的设计模式，简单举几个例子
+*set 	multiset 	map 	multimap*
 
- 
+######  3.容器适配器
 
-16、如何理解智能指针,什么时候改变引用计数
+*stack 	queue* 
 
- 
+###### STL算法
 
-17、share_ptr与weak_ptr的区别与联系
+*count,count_if:计算元素数量*
+
+*find,find_if:查找元素*
+
+*sort:对序列进行排序*
+
+*reverse:颠倒序列顺序*
+
+*remove,remove_if:删除元素*
+
+*replace,replace_if:替换元素*
+
+*merge:合并两个有序序列*
+
+*lower_bound,upper_bound:返回大于等于/大于某个值的第一个位置*
+
+##### 14、什么是面向对象
+
+*将系统看作是一组相互作用的对象的集合，每个对象都是类的一个实例，强调数据的封装、继承、和多态性。*
+
+##### 15、用过的设计模式，简单举几个例子
+
+ *工厂模式*
+
+##### 16、如何理解智能指针,什么时候改变引用计数
+
+   *智能指针目的是不再需要手动管理内存的情况下确保资源的安全释放。智能指针通过在内部保持一个引用计数来追踪指向动态分配的内存块的引用数量。当引用计数减为零时，智能指针会自动释放分配的内存。*
+
+*std::unique_ptr:同一时刻只能有一个*
+
+```c++
+#include <memory>
+
+int main() {
+    std::unique_ptr<int> ptr1 = std::make_unique<int>(42);
+    // std::unique_ptr<int> ptr2 = ptr1; // 错误，无法复制
+    std::unique_ptr<int> ptr2 = std::move(ptr1); // 所有权转移
+    // 此时ptr1不再拥有所有权，内存将在ptr2销毁时被释放
+
+    return 0; // ptr2被销毁，关联的内存被释放
+}
+
+```
+
+*std::shared_ptr:允许多个指针共享同一内存资源，通过引用计数来管理*
+
+```C++
+#include <memory>
+
+int main() {
+    std::shared_ptr<int> ptr1 = std::make_shared<int>(42);
+    std::shared_ptr<int> ptr2 = ptr1; // 共享所有权
+
+    // 此时两个指针共享对同一块内存的所有权
+    // 引用计数为2
+
+    // 当ptr1和ptr2离开作用域，引用计数减为0，内存被释放
+    return 0;
+}
+
+```
+
+##### 17、shared_ptr与weak_ptr的区别与联系
+
+*shared_ptr具有共享所有权的特性，weak_ptr不共享对内存的所有权，只对'shared_ptr'指向的对象进行观测。*
+
+*'weak_ptr'用于打破 'shared_ptr'的循环引用，循环引用可能导致内存泄漏。*
+
+##### 18、表述下string的Copy-On-Write技术，写时copy
+
+  *其核心思想是，当有多个对象共享相同的数据时，只有在其中一个对象要进行修改时，才进行实际的复制操作，确保在写入时才进行数据的拷贝，而在读取时共享相同的数据。*
+
+*赋值操作*
+
+```c++
+std::string str1 = "Hello";
+std::string str2 = str1; // 共享相同的字符数据
+
+// 如果此时 str2 进行修改
+str2[0] = 'C';
+
+// 此时才会进行复制，确保 str1 不受影响
+// str1: "Hello", str2: "Cello"
+
+```
+
+*传递参数*
+
+```C++
+void modifyString(std::string& str) {
+    // 共享相同的字符数据
+    // 如果在这个函数内修改 str，会进行复制
+    str += " World";
+}
+
+int main() {
+    std::string greeting = "Hello";
+    modifyString(greeting);
+
+    // greeting: "Hello", 不受 modifyString 中的修改影响
+    return 0;
+}
+
+```
+
+##### 19、描述下C++的浅copy，深copy
+
+*浅拷贝是一种对象复制的方式，只复制对象本身以及对象内的基本数据类型成员，而不复制指向的动态分配内存的指针。这意味着原对象和拷贝对象会共享同一块内存，如果其中一个对象修改了这块内存，另一个对象也会受到影响。*
+
+```c++
+class ShallowCopy {
+public:
+    int* data;
+
+    ShallowCopy(int val) {
+        data = new int(val);
+    }
+
+    // 浅拷贝构造函数
+    ShallowCopy(const ShallowCopy& other) {
+        data = other.data; // 只复制指针，而不复制数据
+    }
+
+    ~ShallowCopy() {
+        delete data;
+    }
+};
+```
+
+*深拷贝是一种对象复制的方式，它不仅复制对象本身，还复制指向的动态分配内存的内容。这样，原对象和拷贝对象完全独立，修改一个对象的数据不会影响另一个对象。*
+
+```c++
+class DeepCopy {
+public:
+    int* data;
+
+    DeepCopy(int val) {
+        data = new int(val);
+    }
+
+    // 深拷贝构造函数
+    DeepCopy(const DeepCopy& other) {
+        data = new int(*(other.data)); // 复制数据而非指针
+    }
+
+    ~DeepCopy() {
+        delete data;
+    }
+};
+```
+
+
+
+##### 20、C++构造函数是否可以抛出异常
+
+*构造函数可以抛出异常，当构造函数抛出异常时，对象的析构函数将不会被调用，这可能导致资源泄漏，需要手动处理资源的释放。*
 
 # 线程进程总结
 
